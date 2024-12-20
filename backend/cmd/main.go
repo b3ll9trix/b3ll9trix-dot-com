@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/config"
 	"backend/logger"
 	"context"
 	"flag"
@@ -28,14 +29,20 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdin i
 		writer = stdout
 	} else {
 		file, err := os.Open(*fileName)
-		defer file.Close()
+		defer func() error {
+			err := file.Close()
+			if err != nil {
+				return err
+			}
+			return nil
+		}()
 		if err != nil {
 			return err
 		}
 		writer = file
 	}
 
-	config := Config{
+	config := config.Config{
 		Port:     getenv("PORT"),
 		Domain:   getenv("DOMAIN"),
 		LogLevel: logger.ToLevel(getenv("LOG_LEVEL")),
