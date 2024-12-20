@@ -28,7 +28,7 @@ func NewServer(logger logger.Logger, config *Config) http.Handler {
 }
 
 func addRoutes(mux *http.ServeMux, logger logger.Logger, config *Config) {
-	mux.Handle("/api/v1/welcome", http.HandlerFunc(welcome.Handle))
-	mux.Handle("/api/v1/list", http.HandlerFunc(ls.Handle))
-	mux.Handle("/api/v1/cd", http.HandlerFunc(cd.Handle))
+	mux.Handle("/api/v1/welcome", welcome.Handle(logger))
+	mux.Handle("/api/v1/list", ls.Handle(logger))
+	mux.Handle("/api/v1/cd", cd.Handle(logger))
 }

@@ -1,7 +1,12 @@
 package ls
 
-import "net/http"
+import (
+	"backend/logger"
+	"net/http"
+)
 
-func Handle(w http.ResponseWriter, r *http.Request) {
+func Handle(logger logger.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 
+	}
 }

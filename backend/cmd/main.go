@@ -22,6 +22,7 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdin i
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
+
 	var writer io.Writer
 	if *fileName == "na" {
 		writer = stdout
@@ -42,6 +43,7 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdin i
 	}
 
 	logger := logger.New(*config.LogFile)
+
 	server := NewServer(logger, &config)
 	httpServer := http.Server{
 		Addr:    net.JoinHostPort(config.Domain, config.Port),
