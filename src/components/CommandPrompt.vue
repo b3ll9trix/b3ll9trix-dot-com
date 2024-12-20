@@ -15,7 +15,7 @@ defineProps({
             <span class="path">~</span>
             <span class="dollar">$</span>
             <span> {{ command }}</span>
-            <span class="cursor">┃</span>
+            <!-- <span class="cursor">┃</span> -->
         </p>
 
 
