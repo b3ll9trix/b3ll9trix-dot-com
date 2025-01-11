@@ -4,7 +4,9 @@ import (
 	"backend/config"
 	"backend/internal/beep"
 	"backend/logger"
+	"context"
 	"net/http"
+	"strings"
 )
 
 func Handle(logger logger.Logger, config *config.Config) http.HandlerFunc {
@@ -18,10 +20,12 @@ func Handle(logger logger.Logger, config *config.Config) http.HandlerFunc {
 			w.Write([]byte(beep.ServerError()))
 		} else {
 			logger.Info().Msg("html for welcome successfully generated.")
-			logger.Debug().Str("html", html).Send()
+			htmlString := strings.Builder{}
+			html.Render(context.Background(), &htmlString)
+			logger.Debug().Str("html", htmlString.String()).Send()
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(html))
+			html.Render(context.Background(), w)
 		}
 	})
 }

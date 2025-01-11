@@ -10,13 +10,15 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/signal"
+	"sync"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 // run makes it easy to test. For testing purposes, the args could changes so can the function getenv
 func run(ctx context.Context, args []string, getenv func(string) string, stdin io.Reader, stdout, stderr io.Writer) error {
-	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
-	defer cancel()
+	// ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
+	// defer cancel()
 
 	fs := flag.NewFlagSet("logfile", flag.ExitOnError)
 	fileName := fs.String("logfile", "na", "file location for logfile")
@@ -42,7 +44,7 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdin i
 		writer = file
 	}
 
-	config := config.Config{
+	config := &config.Config{
 		Port:     getenv("PORT"),
 		Domain:   getenv("DOMAIN"),
 		LogLevel: logger.ToLevel(getenv("LOG_LEVEL")),
@@ -51,12 +53,13 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdin i
 
 	logger := logger.New(*config.LogFile)
 
-	server := NewServer(logger, &config)
+	server := NewServer(logger, config)
 	httpServer := http.Server{
 		Addr:    net.JoinHostPort(config.Domain, config.Port),
 		Handler: server,
 	}
-
+	var wg sync.WaitGroup
+	wg.Add(1)
 	go func() {
 		logger.Info().Str("addr", httpServer.Addr).Msg("http server listening..")
 		if err := httpServer.ListenAndServe(); err != nil {
@@ -69,6 +72,7 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdin i
 
 		}
 	}()
+	wg.Wait()
 
 	return nil
 }

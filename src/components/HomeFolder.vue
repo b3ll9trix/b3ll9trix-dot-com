@@ -1,9 +1,12 @@
 <script setup>
 import {onMounted, onUnmounted, ref} from 'vue'
 import CommandPrompt from './CommandPrompt.vue';
-const cmds = ref(['resh ./welcom.sh'])
-function enter() {
-  cmds.value.push('')
+const cmds = ref(['resh ./welcome.sh'])
+function enter(event) {
+  if (event.key =="Enter") {
+    cmds.value.push("cmdbox")
+  }
+
 }
 onMounted(() => {
   window.addEventListener('keyup', enter )
@@ -16,10 +19,9 @@ onUnmounted(() => {
 
 <template>
   <div class="console">
-      <span v-for="cmd in cmds" :key="cmd.id">
-        <CommandPrompt :command="cmd" />
+      <span v-for="(cmd, index) in cmds" :key="cmd.key">
+        <CommandPrompt v-model="cmds[index]" />
       </span>
-
   </div>
 </template>
 
